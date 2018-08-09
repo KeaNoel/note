@@ -1,0 +1,230 @@
+emmet 工具的基本使用，总结（emmet是一种插件）
+
+命令：一个HTML文档，输入“!”或“html:5”
+生成后代元素：
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+     
+</body>
+</html>
+-----------------------------------------
+命令：nav>ul>li 
+生成：
+<nav>
+    <ul>
+        <li></li>
+    </ul>
+</nav>
+-----------------------------------------
+命令：div+p+bq 
+生成：
+<div></div>
+<p></p>
+<blockquote></blockquote>
+-----------------------------------------
+命令：div+div>p>span+em^bq 
+生成：
+<div></div>
+<div>
+    <p><span></span><em></em></p>
+    <blockquote></blockquote>
+</div>
+-----------------------------------------
+命令：div+div>p>span+em^^bq
+生成：
+<div></div>
+<div>
+    <p><span></span><em></em></p>
+</div>
+<blockquote></blockquote>
+-----------------------------------------
+命令：.container
+生成：
+div class="container"></div>
+-----------------------------------------
+命令：.container.wrapper.more 
+生成：
+<div class="container wrapper more"></div>
+-----------------------------------------
+命令：#container
+生成：
+<div id="container"></div>
+-----------------------------------------
+命令：(.foo>h1)+(.bar>h2) 
+生成：
+<div class="foo">
+    <h1></h1>
+</div>
+<div class="bar">
+    <h2></h2>
+</div>
+-----------------------------------------
+命令：ul>li*5 
+生成：
+<ul>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+</ul>
+-----------------------------------------
+命令：ul>li.item$*5
+生成：
+<ul>
+    <li class="item1"></li>
+    <li class="item2"></li>
+    <li class="item3"></li>
+    <li class="item4"></li>
+    <li class="item5"></li>
+</ul>
+-----------------------------------------
+命令：ul>li.item$@-*5  
+生成：
+<ul>
+    <li class="item5"></li>
+    <li class="item4"></li>
+    <li class="item3"></li>
+    <li class="item2"></li>
+    <li class="item1"></li>
+</ul>
+-----------------------------------------
+命令：ul>li.item$@3*5 
+生成：
+<ul>
+     <li class="item3"></li>
+     <li class="item4"></li>
+     <li class="item5"></li>
+     <li class="item6"></li>
+     <li class="item7"></li>
+</ul>
+-----------------------------------------
+命令：td[rowspan=2 colspan=3 title]
+生成：
+<td rowspan="2" colspan="3" title=""></td>
+-----------------------------------------
+a{Click me} 
+命令：生成：
+<a href="">Click me</a>
+-----------------------------------------
+命令：p>{Click }+a{here}+{ to continue} 
+生成：
+<p>Click <a href="">here</a>to continue</p>
+-----------------------------------------
+命令：ul>li.item${item$}*3
+生成：
+<ul>
+    <li class="item1">item1</li>
+    <li class="item2">item2</li>
+    <li class="item3">item3</li>
+</ul>
+------------------------------------------------------------------------------------------------------------------
+命令：#content>.article>h1.ok[title=parpername][style=color:#000;]+h3.no[title=subname][style=color:#fff;]+p.words
+生成：
+<div id="content">
+    <div class="article">
+        <h1 class="ok" title="papername" style="color:#000;"></h1>
+        <h3 class="no" title="subname" style="color:#fff;"></h3>
+        <p class="words"></p>
+    </div>
+</div>　
+-------------------------------------------------------------------------------------------------------------------
+
+
+
+emmet在HTML与CSS中的应用
+link   
+生成：
+<link rel="stylesheet" href="" />
+---------------------------------
+script:src
+生成：
+<script src=""></script>
+---------------------------------
+img
+生成：
+<img src="" alt="" />
+---------------------------------
+inp
+生成：
+<input type="text" name="" id="" />
+-----------------------------------
+input:p
+生成：
+<input type="password" name="" id="">
+-------------------------------------
+btn
+生成：
+<button></button>
+------------------
+btn：s   
+生成：
+<button type="submit"></button>
+-------------------------------
+btn：r       
+生成：
+<button type="reset"></button>
+-------------------------------
+
+
+
+------------------
+CSS中缩写
+
+单位：
+p 表示%
+e 表示 em
+r表示 rem
+------------------
+宽度：
+w100
+生成：
+width:100px; 
+
+w100p
+生成：
+width:100%;  
+------------------
+高度：
+h100r
+生成：
+height: 100rem;
+------------------
+颜色：
+c#3
+生成：
+color: #333;
+c#e0
+生成：
+color: #e0e0e0;
+c#fc0
+生成：
+color: #ffcc00;
+
+------------------
+CSS3前缀：
+
+w 表示 -webkit-
+m 表示 -moz-
+s 表示 -ms-
+o 表示 -o-
+命令：-wmso-transform  
+
+结果：
+
+-webkit-transform: ;
+-moz-transform: ;
+-ms-transform: ;
+-o-transform: ;
+transform: ;
+------------------------
+
+
+
+
+
