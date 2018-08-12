@@ -1,0 +1,194 @@
+Java把内存划分成两种：一种是栈内存，一种是堆内存。 
+
+　　在函数中定义的一些基本类型的变量和对象的引用变量（变量名）都在函数的栈内存中分配。 
+
+　　当在一段代码块定义一个变量时，Java就在栈中为这个变量分配内存空间，当超过变量的作用域后，Java会自动释放掉为该变量所分配的内存空间，该内存空间可以立即被另作他用。 
+
+　　堆内存用来存放由new创建的对象（包括由基本类型包装起来的类：Integer、String、Double，实际上每个基本类型都有他的包装类）和数组
+
+
+	
+	
+    一）、基本数据类型：
+
+==比较值是否相等，因为基本类型不是对象，所以没有equals方法。
+
+ 
+
+二）、对象
+
+Object类中的equals方法：
+
+Object.class:
+
+ publicboolean equals(Object anObject) {
+
+       if (this == anObject) {
+
+            returntrue;
+
+       }
+
+}
+
+可以看出最初的equals方法与==作用相同，都是判断内存地址是否相同，
+
+然而String类是一个特例，
+
+观察下面例子：
+
+       Stringa="aaa";
+
+       Stringb="aaa";
+
+       System.out.println(a==b);返回true
+
+       System.out.println(a.equals(b)); 返回true
+
+==依然比较的是对象的内存地址，因为a和b同时指向存放在常量池里的"aaa"这个内存地址。
+
+String类中的equals方法：
+
+       Stringstr=new String("aaa");
+
+       Stringstr1=new String("aaa");
+
+       System.out.println(str==str1);
+
+       System.out.println(str.equals(str1));
+
+上面代码返回的是false  true，
+
+False 很容易理解：==比较的是两个对象的内存地址，故不相等，输出false。
+
+equals方法用的是String类重写object类的equals方法（其他类里也有equals方法）。
+
+String.class:
+
+   publicboolean equals(Object anObject) {
+
+       if (this == anObject) {
+
+            returntrue;
+
+       }
+
+       if (anObjectinstanceof String) {
+
+            String anotherString = (String)anObject;
+
+            intn = value.length;
+
+            if (n == anotherString.value.length) {
+
+                charv1[] = value;
+
+                charv2[] = anotherString.value;
+
+                inti = 0;
+
+                while (n-- != 0) {
+
+                    if (v1[i] != v2[i])
+
+                        returnfalse;
+
+                    i++;
+
+                }
+
+                returntrue;
+
+            }
+
+       }
+
+       returnfalse;
+
+}
+
+从上面可以看出，用==判断对象的地址是否相等，相等则返回true。
+
+       如果前面的判断不成立，接着判断括号内的对象上是否是String类型，接着判断两个字符串对象的的长度是否相等，最后判断内容是否相等，如果相等则返回true。
+
+int i1 = 1;
+
+     int i2 =1;
+
+    System.out.println(i1 == i2);//返回true；基本变量因为不是对象，所以没有equals方法;
+
+    
+
+    String a = new String("aaa");
+
+    String b = "aaa";
+
+    System.out.println(a == b);//返回false；new出来的对象重新分配内存地址
+
+    System.out.println(a.equals(b)); //返回true；String类重写了equals方法
+
+    
+
+    StringBuffer sb1 = new StringBuffer("aaa");
+
+    StringBuffer sb2 = new StringBuffer("aaa");
+
+    System.out.println(sb1 == sb2);//返回false；new出来的对象都重新分配内存地址
+
+    System.out.println(sb1.equals(sb2));//返回false；StringBuffer类继承Object类的equals方法，实际比较的是内存地址
+
+    
+
+    String str1 = new String("111");
+
+    String str2 = new String("111");
+
+    System.out.println(str1 == str2);//返回false；new出来的对象都重新分配内存地址
+
+    System.out.println(str1.equals(str2));//返回true；String类重写了equals方法
+
+    
+
+    Integer in1 = new Integer(1);
+
+    Integer in2 = new Integer(1);
+
+    System.out.println(in1 == in2);//返回false；new出来的对象都重新分配内存地址
+
+    System.out.println(in1.equals(in2));//返回true；除了String类重写了equals方法，其他都与Object类的equals方法一致；
+
+ 
+
+总结：
+
+（1）  ==比较的是（基本变量/引用变量）所指向的内存地址；
+
+（2）  New出来的对象都是重新分配内存地址；
+
+（3）  除了String类重写了equals方法，其他都与Object类的equals方法一致；
+
+public class EqualsTest {
+    public static void main(String[] args) {
+        String s1="abc";
+        String s2="abc";
+        System.out.println(s1==s2);//(turu)因为他们指向了同一个对象
+        System.out.println(s1.equals(s2));//(turn)因为它俩指向了同一个对象，同一个对象当然值相等
+
+
+        String s3 = new String("abc");
+        String s4 = new String("abc");
+
+        System.out.println(s3==s4);//（false)因为它俩指向的是不同的对象
+        System.out.println(s3.equals(s4));//(true）因为它俩指向的对象的值相等
+
+        //总结
+        //1、对于基本数据类型（也称原始数据类型，byte,short,char,int,long,float,double,boolean），“==”比较的是他们的值。“equals”不能用于基本数据类型，只能用于类变量。对于基本数据类型要用其包装类（如：Integer i1=new Integer(t1)）。
+        //2、复合数据类型(类)
+
+        //当他们用（==）进行比较的时候，比较的是他们在堆内存中的存放地址，所以，除非是同一个new出来的对象，他们的比较后的结果为true，否则比较后结果为false。equals用于比较两个对象是否相同。
+
+        //1、Object类中的equals方法和“==”是一样的，没有区别，而String类，Integer类等等一些类，是重写了equals方法，才使得equals和“==不同”，所以，当自己创建类时，自动继承了Object的equals方法，要想实现不同的等于比较，必须重写equals方法。
+        //2、”==”比”equal”运行速度快,因为”==”只是比较引用.
+
+    }
+}

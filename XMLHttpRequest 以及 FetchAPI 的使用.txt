@@ -1,0 +1,314 @@
+什么是ajax
+
+　　ajax的出现,刚好解决了传统方法的缺陷。AJAX 是一种用于创建快速动态网页的技术。通过在后台与服务器进行少量数据交换，AJAX 可以使网页实现异步更新。这意味着可以在不重新加载整个网页的情况下，对网页的某部分进行更新。
+
+　　AJAX 不是新的编程语言，而是一种使用现有标准的新方法。AJAX 即 Asynchronous JavaScript and XML（异步的 JavaScript 和 XML）。它可以在不重新加载整个页面的情况下完成与服务器交换数据并更新部分网页。
+
+  　 AJAX 是一种用于创建快速动态网页的技术。
+
+       通过在后台与服务器进行少量数据交换，AJAX 可以使网页实现异步更新。这意味着可以在不重新加载整个网页的情况下，对网页的某部分进行更新。所有现代浏览器均支持 XMLHttpRequest 对象（IE5 和 IE6 使用 ActiveXObject）。
+
+传统方法的缺点:
+
+　　传统的web交互是用户触发一个http请求服务器,然后服务器收到之后,在做出响应到用户,并且返回一个新的页面,,每当服务器处理客户端提交的请求时,客户都只能空闲等待,并且哪怕只是一次很小的交互、只需从服务器端得到很简单的一个数据,都要返回一个完整的HTML页,而用户每次都要浪费时间和带宽去重新读取整个页面。这个做法浪费了许多带宽，由于每次应用的交互都需要向服务器发送请求，应用的响应时间就依赖于服务器的响应时间。这导致了用户界面的响应比本地应用慢得多。
+
+
+
+一个完整的AJAX请求包括五个步骤:
+
+　　1.创建XMLHTTPRequest对象
+
+　　2.使用open方法创建http请求,并设置请求地址
+
+　　3.设置发送的数据，开始和服务器端交互
+
+　　4.注册事件
+
+　　5.获取响应并更新界面
+
+这里列出get请求和post请求的例子：
+
+get请求:
+复制代码
+<script type="text/javascript">
+    //请求函数
+    function f1(){
+        console.log('start');
+        //1.创建AJAX对象
+        var ajax = new XMLHttpRequest();
+        
+        //4.给AJAX设置事件(这里最多感知4[1-4]个状态)
+        ajax.onreadystatechange = function(){
+            //5.获取响应
+            //responseText        以字符串的形式接收服务器返回的信息
+            //console.log(ajax.readyState);
+            if(ajax.readyState == 4 && ajax.status == 200){
+                var msg = ajax.responseText;
+                console.log(msg);
+                //alert(msg);
+                var divtag = document.getElementById('result');
+                divtag.innerHTML = msg;
+            }
+        }
+        
+        //2.创建http请求,并设置请求地址
+        var username = document.getElementsByTagName('input')[0].value;
+        var email = document.getElementsByTagName('input')[1].value;
+        username = encodeURIComponent(username);    //对输入的特殊符号(&,=等)进行编码
+        email = encodeURIComponent(email);
+        ajax.open('get','response.php?username='+username+'&email='+email);
+        
+        //3.发送请求(get--null    post--数据)
+        ajax.send(null);
+    }
+    
+</script>
+复制代码
+post请求:
+复制代码
+<script type="text/javascript">
+    //请求函数
+    function f1(){
+        //console.log('start');
+        //1.创建AJAX对象
+        var ajax = new XMLHttpRequest();
+        
+        //4.给AJAX设置事件(这里最多感知4[1-4]个状态)
+        ajax.onreadystatechange = function(){
+            //5.获取响应
+            //responseText        以字符串的形式接收服务器返回的信息
+            //console.log(ajax.readyState);
+            if(ajax.readyState == 4 && ajax.status == 200){
+                var msg = ajax.responseText;
+                console.log(msg);
+                //alert(msg);
+                var divtag = document.getElementById('result');
+                divtag.innerHTML = msg;
+            }
+        }
+        
+        //2.创建http请求,并设置请求地址
+        ajax.open('post','response.php');
+        //post方式传递数据是模仿form表单传递给服务器的,要设置header头协议
+        ajax.setRequestHeader("content-type","application/x-www-form-urlencoded");
+        
+        //3.发送请求(get--null    post--数据)
+        var username = document.getElementsByTagName('input')[0].value;
+        var email = document.getElementsByTagName('input')[1].value;
+        username = encodeURIComponent(username);    //对输入的特殊符号(&,=等)进行编码
+        email = encodeURIComponent(email);
+        var info = 'username='+username+'&email='+email;    //将请求信息组成请求字符串
+        ajax.send(info);
+    }
+    
+</script>
+复制代码
+什么是XMLHttpRequest
+
+XMLHttpRequest 是一个浏览器接口，使得 Javascript 可以进行 HTTP (S) 通信。最早，微软在 IE 5 引进了这个接口。因为它太有用，其他浏览器也模仿部署了，ajax 操作因此得以诞生。但是，这个接口一直没有标准化，每家浏览器的实现或多或少有点不同。HTML 5 的概念形成后，W3C 开始考虑标准化这个接口。2008年 2 月，就提出了 XMLHttpRequest Level 2 草案。这个 XMLHttpRequest 的新版本，提出了很多有用的新功能，将大大推动互联网革新。本文就对这个新版本进行详细介绍。
+　　XMLHttpRequest对象是ajax的基础,XMLHttpRequest 用于在后台与服务器交换数据。这意味着可以在不重新加载整个网页的情况下，对网页的某部分进行更新。目前所有浏览器都支持XMLHttpRequest
+
+新版本的 XMLHttpRequest 对象，针对老版本的缺点，做出了大幅改进。
+* 可以设置 HTTP 请求的时限。
+
+* 可以使用 FormData 对象管理表单数据。
+
+* 可以上传文件。
+
+* 可以请求不同域名下的数据（跨域请求）。
+
+* 可以获取服务器端的二进制数据。
+
+* 可以获得数据传输的进度信息。
+
+五步使用法:
+
+　　1.创建XMLHTTPRequest对象
+
+　　2.使用open方法设置和服务器的交互信息
+
+　　3.设置发送的数据，开始和服务器端交互
+
+　　4.注册事件
+
+　　5.更新界面
+
+下面给大家列出get请求和post请求的例子
+
+get请求:
+
+复制代码
+//步骤一:创建异步对象
+var ajax = new XMLHttpRequest();
+//步骤二:设置请求的url参数,参数一是请求的类型,参数二是请求的url,可以带参数,动态的传递参数starName到服务端
+ajax.open('get','getStar.php?starName='+name);
+//步骤三:发送请求
+ajax.send();
+//步骤四:注册事件 onreadystatechange 状态改变就会调用
+ajax.onreadystatechange = function () {
+   if (ajax.readyState==4 &&ajax.status==200) {
+    //步骤五 如果能够进到这个判断 说明 数据 完美的回来了,并且请求的页面是存在的
+　　　　console.log(ajax.responseText);//输入相应的内容
+  　　}
+}
+复制代码
+ 
+
+ post请求:
+
+复制代码
+//创建异步对象  
+var xhr = new XMLHttpRequest();
+//设置请求的类型及url
+//post请求一定要添加请求头才行不然会报错
+xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+ xhr.open('post', '02.post.php' );
+//发送请求
+xhr.send('name=fox&age=18');
+xhr.onreadystatechange = function () {
+    // 这步为判断服务器是否正确响应
+  if (xhr.readyState == 4 && xhr.status == 200) {
+    console.log(xhr.responseText);
+  } 
+};
+复制代码
+ 
+
+为了方便
+
+复制代码
+function ajax_method(url,data,method,success) {
+    // 异步对象
+    var ajax = new XMLHttpRequest();
+
+    // get 跟post  需要分别写不同的代码
+    if (method=='get') {
+        // get请求
+        if (data) {
+            // 如果有值
+            url+='?';
+            url+=data;
+        }else{
+
+        }
+        // 设置 方法 以及 url
+        ajax.open(method,url);
+
+        // send即可
+        ajax.send();
+    }else{
+        // post请求
+        // post请求 url 是不需要改变
+        ajax.open(method,url);
+
+        // 需要设置请求报文
+        ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+
+        // 判断data send发送数据
+        if (data) {
+            // 如果有值 从send发送
+            ajax.send(data);
+        }else{
+            // 木有值 直接发送即可
+            ajax.send();
+        }
+    }
+
+    // 注册事件
+    ajax.onreadystatechange = function () {
+        // 在事件中 获取数据 并修改界面显示
+        if (ajax.readyState==4&&ajax.status==200) {
+            // console.log(ajax.responseText);
+
+            // 将 数据 让 外面可以使用
+            // return ajax.responseText;
+
+            // 当 onreadystatechange 调用时 说明 数据回来了
+            // ajax.responseText;
+
+            // 如果说 外面可以传入一个 function 作为参数 success
+            success(ajax.responseText);
+        }
+    }
+
+}
+复制代码
+ 案例:简单使用Idea创建三层架构项目和数据库连接(使用原生ajax进行访问+ajax)
+
+简单介绍Fecth
+Fetch 是浏览器提供的原生 AJAX 接口。
+
+由于原来的XMLHttpRequest不符合关注分离原则，且基于事件的模型在处理异步上已经没有现代的Promise等那么有优势。因此Fetch出现来解决这种问题。
+
+Fetch API 提供了能够用于操作一部分 HTTP 的 JavaScript 接口，比如 requests 和 responses。它同时也提供了一个全局的 fetch() 方法——能够简单的异步的获取资源。 
+使用 window.fetch 函数可以代替以前的 $. ajax、$.get 和 $.post。
+
+Fetch接口
+Fetch 提供了对 Request 和 Response 等对象通用的定义。 
+发送请求或者获取资源，需要使用 fetch（） 方法。
+
+处理 JSON响应
+假设需要请求 JSON —— 回调结果对象 response 中有一个json()方法,用来将原始数据转换成 JavaScript 对象:
+
+复制代码
+fetch('https://davidwalsh.name/demo/arsenal.json').then(function(response) { 
+    // 转换为 JSON
+    return response.json();
+}).then(function(j) {
+    // 现在, `j` 是一个 JavaScript object
+    console.log(j); 
+});
+复制代码
+这很简单 , 只是封装了 JSON.parse(jsonString) 而已, 但 json 方法还是很方便的。
+
+处理基本的Text / HTML响应
+SON 并不总是理想的请求/响应数据格式, 那么我们看看如何处理 HTML或文本结果:
+
+复制代码
+fetch('/next/page')
+  .then(function(response) {
+    return response.text();
+  }).then(function(text) { 
+    // <!DOCTYPE ....
+    console.log(text); 
+  });
+复制代码
+如上面的代码所示, 可以在 Promise 链式的 then 方法中, 先返回 text() 结果 ,再获取 text 
+
+处理Blob结果
+通过 fetch 加载图像或者其他二进制数据, 则会略有不同:
+
+复制代码
+fetch('flowers.jpg')
+    .then(function(response) {
+      return response.blob();
+    })
+    .then(function(imageBlob) {
+      document.querySelector('img').src = URL.createObjectURL(imageBlob);
+    });
+复制代码
+响应 Body mixin 的 blob() 方法处理响应流(Response stream), 并且将其读完
+
+提交表单数据(Posting Form Data)
+另一种常用的 AJAX 调用是提交表单数据 —— 示例代码如下:
+
+fetch('/submit', {
+    method: 'post',
+    body: new FormData(document.getElementById('comment-form'))
+});
+提交 JSON 的示例如下:
+
+复制代码
+fetch('/submit-json', {
+    method: 'post',
+    body: JSON.stringify({
+        email: document.getElementById('email').value
+        answer: document.getElementById('answer').value
+    })
+});
+复制代码
+ 
+
+缺点
+使用 fetch 无法取消一个请求。这是因为 Fetch API 基于 Promise，而 Promise 无法做到这一点。
+由于 Fetch 是典型的异步场景，所以大部分遇到的问题不是 Fetch 的，其实是 Promise 的。

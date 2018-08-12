@@ -1,0 +1,96 @@
+Servlet接口
+
+该接口定义了如下5个方法 
+1. init() 
+2. service() 
+3. destroy() 
+4. getServletConfig() 
+5. getServletInfo() 
+也就意味着，如果我们要通过实现Servlet接口来编写Servlet类，需要实现Servlet接口中定义的5个方法，这样编写比较麻烦，于是有了GenericServlet抽象类。
+
+GenericServlet抽象类
+
+该类定义了一个通用的、不依赖于具体协议的Servlet，他实现了Servlet接口和ServletConfig接口。 
+由于该类给出了除了service()方法的其他4个方法的简单实现。所以，通过继承GenericServlet来编写Servlet类，只需要实现service()方法即可。
+
+HttpServlet抽象类
+
+大多数的网络应用中，都是客户端通过HTTP协议去访问服务器端的资源，而我们所编写的Servlet也主要用于HTTP协议的请求和响应。为了快速开发应用于HTTP协议的Servlet类，Sun公司在javax.servlet.http包中给我们提供了一个抽象的类HttpServlet，它继承自GenericServlet类，用于创建适合Web站点的HTTP Servlet。
+
+另外，针对HTTP1.1中定义的7种请求方法GET，POST，HEAD，PUT，DELETE，TRACE，OPTIONS，HttpServlet分别提供了7个处理方法： 
+doGet()，doPost()，doHead()，doPut()，doDelete()，doTrace()，doOptions() 
+当容器接收到一个针对HttpServlet对象的请求时，调用该对象中的方法的顺序如下： 
+1. 调用公共(public) service()方法。 
+2. 在公共的 service() 方法中，首先将参数类型转换为HttpServletRequest和HttpServletResponse，然后调用保护的(protected) service()方法，将转换后的HttpServletRequest对象和HttpServletResponse对象作为参数传递进去。 
+3. 在保护的service()方法中，首先调用HttpServletRequest对象的getMethod()方法，获取HTTP请求方法的名字，然后跟去请求方法的类型，调用相应的doXxx()方法。
+
+因此我们在编写HttpServlet派生类的时候，一般不需要去覆盖service()方法，而只需要重写相应的doXxx()方法即可。
+
+HttpServlet对这7种方法的实现： 
+1. TRACE和OPTIONS做了适当实现，不需要去覆盖。 
+2. 其他5个提供的实现都是返回HTTP错误。
+
+与请求和响应相关的接口
+
+Servlet由Servlet容器管理，当用户请求到来时，容器创建一个ServletRequest对象，封装请求数据，同时创建一个ServletResponse对象，封装响应数据。这两个对象被容器作为service()方法的参数传递给Servlet，Servlet利用ServletRequest对象获取客户端发送来的请求数据，利用ServletResponse对象发送响应数据。
+
+对于HttpServletRequest对象和HttpServletResponse对象分别继承与ServletRequest对象和ServletResponse对象，并且在原有方法基础上新增一些方法。但都是用作封装请求数据和响应数据。
+
+与Servlet配置相关的接口
+
+Servlet容器使用ServletConfig对象在Servlet初始化期间向它传递配置信息，一个Servlet只有一个ServletConfig对象。 
+在ServletConfig接口中，只定义了4个方法： 
+1.getInitParameter() 
+2. getInitParameterNames() 
+3. getServletContext() 
+4. getServletName() 
+Servlet API中主要的接口与类的UML图
+
+Servlet上下文
+
+运行在Java虚拟机中的每一个Web应用程序都有一个与之相关的Servlet上下文。Java Servlet API提供了一个ServletContext接口用来表示上下文。在这个接口中定义了一组方法，Servlet可以使用这些方法与它的Servlet容器进行通信。例如，得到文件的MIME类型，转发请求，或者向日志文件中写入日志信息。 
+Servlet容器在Web应用程序加载时创建ServletContext对象，作为Web应用程序的运行时表示，ServletContext对象可以被应用程序中所有的Servlet所访问。
+
+得到ServletContext对象的方法： 
+1. 通过ServletConfig对象的getServletContext()方法得到。 
+2. GenericServlet类的getServletContext()方法得到（其实质也是调用ServletConfig对象的getServletContext()方法得到的）。
+
+请求转发
+
+实现请求转发是通过RequestDispatcher接口实现的 
+得到RequestDispatcher对象的方法： 
+1. 利用ServletRequest接口中的RequestDispatcher()方法 
+2. 利用ServletContext接口中的getNamedDispatcher()方法 
+3. 利用ServletContext接口中的getRequestDispatcher()方法 
+请求转发的两种方法： 
+1. forward() 
+2. include() 
+两者区别在于，利用include()方法将请求转发给其他的Servlet，被调用的Servlet对该请求作出的响应将并入原先的响应对象中，原先的Servlet还可以继续输出响应信息。而利用forward()方法将请求转发给其他的Servlet，将由被调用的Servlet负责对请求作出响应，而原先Servlet的执行则终止。
+
+另外还可以通过HttpServletResponse接口的sendRedirect()方法利用另外的资源来为客户端进行服务。
+
+sendRedirect()不但可以在位于同一个主机上的不同Web应用程序之间进行重定向，而且可以将客户端重定向到其他服务器上的Web应用程序资源。 
+两者的工作原理区别如图所示: 
+
+
+
+
+总结
+
+Servlet API 中主要接口及实现类，包括：
+
+与Servlet实现相关的Servlet接口 
+Servlet接口
+GenericServlet抽象类
+HttpServlet抽象类
+与请求和响应相关的接口 
+ServletRequest接口
+ServletResponse接口
+HttpServletResquest接口
+HttpServletResponse接口
+与Servlet配置相关的接口 
+ServletConfig接口
+Servlet上下文 
+ServletContext接口
+请求转发 
+RequestDispatcher接口
