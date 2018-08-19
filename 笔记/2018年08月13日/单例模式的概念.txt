@@ -1,0 +1,132 @@
+概念：
+
+单例模式，是一种常用的软件设计模式。在它的核心结构中只包含一个被称为单例的特殊类。通过单例模式可以保证系统中，应用该模式的类一个类只有一个实例。即一个类只有一个对象实例。
+
+单例模式定义：
+
+单例模式确保某个类只有一个实例，而且自行实例化并向整个系统提供这个实例。在计算机系统中，线程池、缓存、日志对象、对话框、打印机、显卡的驱动程序对象常被设计成单例。这些应用都或多或少具有资源管理器的功能。每台计算机可以有若干个打印机，但只能有一个Printer Spooler，以避免两个打印作业同时输出到打印机中。每台计算机可以有若干通信端口，系统应当集中管理这些通信端口，以避免一个通信端口同时被两个请求同时调用。总之，选择单例模式就是为了避免不一致状态，避免政出多头。
+
+单例模式的要点：
+
+　　一是某个类只能有一个实例；
+
+　　二是它必须自行创建这个实例；
+
+　　三是它必须自行向整个系统提供这个实例。
+
+单例模式保证了全局对象的唯一性，比如系统启动读取配置文件就需要单例保证配置的一致性。
+
+从具体实现角度来说：
+
+　　一是单例模式的类只提供私有的构造函数，
+
+　　二是类定义中含有一个该类的静态私有对象，
+
+　　三是该类提供了一个静态的公有的函数用于创建或获取它本身的静态私有对象。
+
+单例模式的选择
+
+还记得我们最早使用的MVC框架Struts1中的action就是单例模式的，而到了Struts2就使用了多例。在Struts1里，当有多个请求访问，每个都会分配一个新线程，在这些线程，操作的都是同一个action对象，每个用户的数据都是不同的，而action却只有一个。到了Struts2， action对象为每一个请求产生一个实例，并不会带来线程安全问题（实际上servlet容器给每个请求产生许多可丢弃的对象，但是并没有影响到性能和垃圾回收问题，有时间会做下研究）。
+
+优点
+一、实例控制
+单例模式会阻止其他对象实例化其自己的单例对象的副本，从而确保所有对象都访问唯一实例。
+二、灵活性
+因为类控制了实例化过程，所以类可以灵活更改实例化过程。
+缺点
+一、开销
+虽然数量很少，但如果每次对象请求引用时都要检查是否存在类的实例，将仍然需要一些开销。可以通过使用静态初始化解决此问题。
+二、可能的开发混淆
+使用单例对象（尤其在类库中定义的对象）时，开发人员必须记住自己不能使用new关键字实例化对象。因为可能无法访问库源代码，因此应用程序开发人员可能会意外发现自己无法直接实例化此类。
+三、对象生存期
+不能解决删除单个对象的问题。在提供内存管理的语言中（例如基于.NET Framework的语言），只有单例类能够导致实例被取消分配，因为它包含对该实例的私有引用。在某些语言中（如 C++），其他类可以删除对象实例，但这样会导致单例类中出现悬浮引用。
+ 
+实现单例模式的方式：
+1、立即加载方式
+
+ 
+
+
+package com;
+
+public class Singleton1 {
+    // 私有构造
+    private Singleton1() {}
+
+    private static Singleton1 single = new Singleton1();
+
+    // 静态工厂方法
+    public static Singleton1 getInstance() {
+        return single;
+    }
+
+}
+
+ 
+
+此单例在类加载初始化时就创建好一个静态的对象供外部使用，除非系统重启，这个对象不会改变，所以本身就是线程安全的。
+
+Singleton通过将构造方法限定为private避免了类在外部被实例化，在同一个虚拟机范围内，Singleton的唯一实例只能通过getInstance()方法访问。（事实上，通过Java反射机制是能够实例化构造方法为private的类的，那基本上会使所有的Java单例实现失效。此问题在此处不做讨论，姑且闭着眼就认为反射机制不存在。）
+
+ 
+
+2、延迟加载方式
+
+
+public class Singleton2 {
+
+    // 私有构造
+    private Singleton2() {}
+
+    private static Singleton2 single = null;
+
+    public static Singleton2 getInstance() {
+        if(single == null){
+            single = new Singleton2();
+        }
+        return single;
+    }
+}
+
+该示例虽然用延迟加载方式实现了此单例，但在多线程环境下会产生多个single对象，如何改造请看以下方式:
+
+使用synchronized同步锁
+
+
+public class Singleton3 {
+    // 私有构造
+    private Singleton3() {}
+
+    private static Singleton3 single = null;
+
+    public static Singleton3 getInstance() {
+        
+        // 等同于 synchronized public static Singleton3 getInstance()
+        synchronized(Singleton3.class){
+          // 注意：里面的判断是一定要加的，否则出现线程安全问题
+            if(single == null){
+                single = new Singleton3();
+            }
+        }
+        return single;
+    }
+}
+
+在方法上加synchronized同步锁或是用同步代码块对类加同步锁，此种方式虽然解决了多个实例对象问题，但是该方式运行效率却很低下，下一个线程想要获取对象，就必须等待上一个线程释放锁之后，才可以继续运行。
+
+
+public class Singleton6 {
+    // 私有构造
+    private Singleton6() {}
+
+    // 静态内部类
+    private static class InnerObject{
+        private static Singleton6 single = new Singleton6();
+    }
+    
+    public static Singleton6 getInstance() {
+        return InnerObject.single;
+    }
+}
+
+静态内部类虽然保证了单例在多线程并发下的线程安全性，但是在遇到序列化对象时，默认的方式运行得到的结果就是多例的。

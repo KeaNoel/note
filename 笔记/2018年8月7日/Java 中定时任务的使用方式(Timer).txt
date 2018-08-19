@@ -1,0 +1,317 @@
+一、概述
+
+在java中实现定时执行任务的功能，主要用到两个类，Timer和TimerTask类。其中Timer是用来在一个后台线程按指定的计划来执行指定的任务。
+TimerTask一个抽象类，它的子类代表一个可以被Timer计划的任务，具体要执行的代码写在TimerTask需要被实现的run方法中。
+
+二、先看一个最简单的例子
+
+我们通过代码来说明
+
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class TimerDemo {
+    public static String getCurrentTime() {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        System.out.println("main start:"+getCurrentTime());
+        startTimer();
+        Thread.sleep(1000*5); //休眠5秒
+        System.out.println("main   end:"+getCurrentTime());
+    }
+
+    public static void startTimer(){
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("task   run:"+getCurrentTime());
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(task, 0);
+    }
+}
+
+　　为了便于通过打印观察信息，我们在main方法中加了些打印信息，并调用Thread.sleep让主线程休眠一下。另外在类中增加了一个获取当前日期的getCurrentTime方法。
+
+      上面的代码，在startTimer方法中，先创建了一个TimerTask对象（将要被定时器执行的任务），然后创建了一个Timer对象，然后调用Timer类的schedule方法。Timer类有多个带不同参数的schedule方法。这里用到的是：
+
+　　public void schedule(TimerTask task, long delay)
+
+　　该方法的含义是，表示定时器将延迟delay（毫秒）时间后，执行task任务。如果delay为负数或0，则任务会被立即进行。而且是一次性的执行任务，后续不会重复（或定时）执行该任务。
+
+      对于Timer类，还提供一个同样功能的方法，如下：
+
+　　public void schedule(TimerTask task, Date time)
+
+     该方法与上面方法的区别是，上面方法是指定延期一段时间执行，这个方法是指定在某个具体的时间点执行。注意，如果系统的当前时间已经超过了参数time指定的时间，该任务会被立即执行。
+
+ 当运行上面代码时，我们发现程序立即打印类似如下的2条信息：
+main start:2016-01-13 22:23:18
+task   run:2016-01-13 22:23:18
+
+因为我们这里给schedule方法传递的delay参数值为0，所以任务会被立即执行，所以两个语句打印出来的时间是一样的，这是应该的。大家可以自己改变传入的delay值来看输出信息的变化。再过大约5秒（即sleep的时间）后，继续打印了1条信息：
+
+main   end:2016-01-13 22:23:23
+
+打印信息的时间与上面语句差了5秒，与sleep设置的一致，也是很合理的。
+
+ 但我们会发现一个很有趣的现象，会发现该进程不会退出，这时main主线程已经结束了，这说明定时器把任务完成后，即使后面没有待等待执行的任务了，定时器中创建的后台线程也不会立即退出。查看了相关的java doc文档，解释说定时器线程不会主动退出，需要等待垃圾回收，但java的待垃圾回收是无法通过代码自己控制的，而是由虚拟机控制的。
+
+研究了下，发现在创建Timer对象，及执行Timer timer = new Timer(); 语句时，定时器线程就会被创建。也就是说即使上面代码没有timer.schedule(task, 0);这个语句，程序也不会退出。感觉这个挺不合理的。再次研究了下Timer类的源代码，发现其还有一个带布尔参数的构造函数：
+
+public Timer(boolean isDaemon)
+
+从参数名就可以看出，如果参数值为true时，则Timer创建的定时器线程为守护线程。守护线程的含义是，当java进程中所有的工作线程都退出后，守护线程就自动退出了。
+
+这时我们只要把上面例子中的创建Timer对象的代码改为：Timer timer = new Timer(true);
+
+发现运行程序后，等main线程（main线程不是守护线程，是工作线程）结束后，程序会退出，也就是说定时器线程也退出了，说明加上参数true后，创建的它是守护线程了。
+
+   但问题是，在真正的应用场景中，有很多工作线程在运行，程序不会随便退出。那如果要想定时器能立即退出或关闭，该怎么办呢？这个我们下面介绍。
+
+三、定时器的退出
+
+　　Timer类提供了一个cancel方法可以取消定时器。调用cancel方法会终止此计时器，丢弃所有当前已安排的任务。这不会干扰当前正在执行的任务（如果存在）。一旦终止了计时器，那么它的执行线程也会终止，并且无法根据它安排更多的任务。 
+　　注意，在此计时器调用的计时器任务的 run 方法内调用此方法，就可以绝对确保正在执行的任务是此计时器所执行的最后一个任务。可以重复调用此方法；但是第二次和后续调用无效。
+
+    我们再看一个例子代码：
+
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class TimerDemo {
+    public static String getCurrentTime() {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        System.out.println("main start:"+getCurrentTime());
+        Timer timer = startTimer();
+        Thread.sleep(1000*5); //休眠5秒
+        System.out.println("main   end:"+getCurrentTime());
+        timer.cancel();
+    }
+
+    public static Timer startTimer(){
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("task   run:"+getCurrentTime());
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(task, 0);
+        return timer;
+    }
+}
+
+运行程序，跟上面一个例子的输出情况完全一样。区别是，当main方法结束后。进程会主动退出，也就是说定时器线程已经关闭了。
+因为我们在main方法中调用了cancel方法。 注意，如果不是在TimerTask的run方法中调用cancel方法一定要注意，一定要确保希望执行的任务已经开始执行或执行完毕，否则如果任务还未开始执行。就调用cancel，则所有任务都不会被执行了。比如上面的代码，
+
+比如上面的代码，如果我们不在main方法中调用cancel方法，而是在startTimer方法中 timer.schedule(task, 0); 语句后加上timer.cancel();语句，运行后会发现，定时器任务不会被执行，因为还未来得及执行就被取消中止了。
+
+四、定时执行任务
+
+    上面的例子，我们介绍的是一次性任务，也就是定时器时间到了，执行完任务，后面不会再重复执行。在实际的应用中，有很多场景需要定时重复的执行同一个任务。这也分两种情况，一是每隔一段时间就执行任务，二是每天（或每周、每月等）的固定某个（或某几个）时间点来执行任务。
+
+    我们先来看第一种情况，实现每隔10秒执行同一任务的例子。代码如下：
+
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class TimerDemo {
+    public static String getCurrentTime() {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        System.out.println("main start:"+getCurrentTime());
+        startTimer();
+    }
+
+    public static void startTimer(){
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("task   run:"+getCurrentTime());
+                try {
+                    Thread.sleep(1000*3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(task, 1000*5,1000*10);
+    }
+}
+
+执行上述程序，输出信息如下（因为定时器没有停止，重复执行任务，会不断输出，这里只拷贝了前面的一些输出）
+
+
+main start:2016-01-14 08:41:14
+task   run:2016-01-14 08:41:19
+task   run:2016-01-14 08:41:29
+task   run:2016-01-14 08:41:39
+task   run:2016-01-14 08:41:49
+task   run:2016-01-14 08:42:00
+task   run:2016-01-14 08:42:10
+task   run:2016-01-14 08:42:20
+task   run:2016-01-14 08:42:30
+task   run:2016-01-14 08:42:40
+
+在上面的代码中，我们调用了 timer.schedule(task, 1000*5,1000*10); 这个含义是该任务延迟5秒后执行，然后会每隔10秒重复执行。我们观察输出信息中打印的时间，是与预期一样的。 另外可以看出，间隔是以任务开始执行时间为起点算的，也就是并不是任务执行完成后再等待10秒。
+
+Timer类有两个方法可以实现这样的功能，如下：
+public void schedule(TimerTask task, long delay, long period)
+
+public void schedule(TimerTask task, Date firstTime, long period)
+
+我们上面代码用的是第一个方法。两个方法区别在于第一次执行的时间，第一个方法是在指定延期一段时间（单位为毫秒）后执行；第二个方法是在指定的时间点执行。
+
+这时我们考虑如下场景，如果某个任务的执行耗时超过了下次等待时间，会出现什么情况呢？ 我们还是通过代码来看：
+
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class TimerDemo {
+    public static String getCurrentTime() {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        System.out.println("main start:"+getCurrentTime());
+        startTimer();
+    }
+
+    public static void startTimer(){
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("task begin:"+getCurrentTime());
+                try {
+                    Thread.sleep(1000*10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("task   end:"+getCurrentTime());
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(task, 1000*5,1000*5);
+    }
+}
+
+与前面代码相比，我们只改了2处代码和修改了下打印，一是将run方法中的sleep改为了10秒，二是将任务的执行周期改为5秒。也就说任务的执行耗时超过了任务重复执行的间隔。运行程序，前面的输出如下：
+
+
+main start:2016-01-14 09:03:51
+task begin:2016-01-14 09:03:56
+task   end:2016-01-14 09:04:06
+task begin:2016-01-14 09:04:06
+task   end:2016-01-14 09:04:16
+task begin:2016-01-14 09:04:16
+task   end:2016-01-14 09:04:26
+task begin:2016-01-14 09:04:26
+task   end:2016-01-14 09:04:36
+task begin:2016-01-14 09:04:36
+task   end:2016-01-14 09:04:46
+task begin:2016-01-14 09:04:46
+task   end:2016-01-14 09:04:56
+
+可以看出，每个任务执行完成后，会立即执行下一个任务。因为从任务开始执行到任务完成的耗时已经超过了任务重复的间隔时间，所以会重复执行。
+
+五、定时执行任务（重复固定时间点执行）
+
+我们来实现这样一个功能，每天的凌晨1点定时执行一个任务，这在很多系统中都有这种功能，比如在这个任务中完成数据备份、数据统计等耗时、耗资源较多的任务。代码如下：
+
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class TimerDemo {
+    public static String getCurrentTime() {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        System.out.println("main start:" + getCurrentTime());
+        startTimer();
+    }
+
+    public static void startTimer() {
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("task begin:" + getCurrentTime());
+                try {
+                    Thread.sleep(1000 * 20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("task   end:" + getCurrentTime());
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(task, buildTime(), 1000 * 60 * 60 * 24);
+    }
+
+    private static Date buildTime() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 1);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        Date time = calendar.getTime();
+        if (time.before(new Date())) {
+            //若果当前时间已经是凌晨1点后，需要往后加1天，否则任务会立即执行。
+            //很多系统往往系统启动时就需要立即执行一次任务，但下面又需要每天凌晨1点执行，怎么办呢？
+            //很简单，就在系统初始化话时单独执行一次任务（不需要用定时器，只是执行那段任务的代码）
+            time = addDay(time, 1);
+        }
+        return time;
+    }
+
+    private static Date addDay(Date date, int days) {
+        Calendar startDT = Calendar.getInstance();
+        startDT.setTime(date);
+        startDT.add(Calendar.DAY_OF_MONTH, days);
+        return startDT.getTime();
+    }
+
+}
+
+因为是间隔24小时执行，没法等待观察输出。
+
+六、小结
+
+    本文介绍了利用java Timer类如何执行定时任务的机制。可以看出，还是有许多需要注意的方法。 本文中介绍的例子，每个定时器只对应一个任务。
+
+　 本文介绍的内容可以满足大部分应用场景了，但还有一些问题，比如对于一个定时器包括多个任务？定时器取消后能否再次添加任务？Timer类中还有哪些方法可用？ 这些问题，我们再后面的博文中介绍。

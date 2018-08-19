@@ -1,0 +1,220 @@
+在java中，可以将一个类定义在另一个类里面或者一个方法里面，这样的类称为内部类。
+
+广泛意义上的内部类一般来说包括这四种：成员内部类、局部内部类、匿名内部类和静态内部类
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+静态内部类方式
+public class Boss{
+
+  // 1、将构造器私有化
+  private Boss(){}
+ 
+
+  // 2、充分利用了静态内部类的特性，在里面初始化Boss实例
+  
+  //  -只会被初始化一次
+
+  //  -只有当静态内部的属性、方法等被调用的时候，静态内部类才会被加载
+  static class Singleton{
+	
+	private final static Boss INSTANCE = new Boss();
+  }
+  
+  //3、提供一个公共方法，获取实例化好之后的对象
+  public static Boss getInstance(){
+	return Singleton.INSTANCE;
+  }
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+枚举类
+
+enum 应该是最简单，也是最好的一种实现单例模式的方式。
+
+它充分利用了 JVM 的特性，既保证了线程安全，又保证了延迟加载。
+
+enum Boss {
+    INSTANCE;
+
+    public void sayHello () {
+        System.out.println("hello");
+    }
+}
+
+public class Main {
+    public static void main (String... args) {
+        Boss theBoss = Boss.INSTANCE;  // 获取实例
+        theBoss.sayHello();            // 调用方法
+    }
+}
+
+
+
+
+
+枚举（enum）类型是Java 5新增的特性，它是一种新的类型，允许用常量来表示特定的数据片断，而且全部都以类型安全的形式来表示。
+
+ 
+
+1、常量的使用 
+
+     在JDK1.5之前，我们定义常量都是：public static fianl....。现在好了，有了枚举，可以把相关的常量分组到一个枚举类型里，而且枚举提供了比常量更多的方法。
+
+package com;
+ 
+public enum Color {
+     
+     RED, GREEN, BLANK, YELLOW 
+ 
+}
+　　使用
+
+package com;
+ 
+public class B {
+ 
+    public static void main(String[] args) {
+ 
+ 
+        System.out.println( isRed( Color.BLANK ) ) ;  //结果： false
+        System.out.println( isRed( Color.RED ) ) ;    //结果： true
+ 
+    }
+ 
+ 
+    static boolean isRed( Color color ){
+        if ( Color.RED.equals( color )) {
+            return true ;
+        }
+        return false ;
+    }
+ 
+}
+　　或者 switch 的使用
+
+
+package com;
+ 
+public class B {
+ 
+    public static void main(String[] args) {
+ 
+        showColor( Color.RED );
+ 
+    }
+ 
+    static void showColor(Color color){
+        switch ( color ) {
+        case BLANK:
+            System.out.println( color );
+            break;
+        case RED :
+            System.out.println( color );
+            break;
+        default:
+            System.out.println( color );
+            break;
+        }
+         
+    }
+}
+　　
+
+2、自定义函数
+
+package com;
+ 
+public enum Color {
+     
+     RED("红色", 1), GREEN("绿色", 2), BLANK("白色", 3), YELLO("黄色", 4);
+     
+     
+    private String name ;
+    private int index ;
+     
+    private Color( String name , int index ){
+        this.name = name ;
+        this.index = index ;
+    }
+     
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public int getIndex() {
+        return index;
+    }
+    public void setIndex(int index) {
+        this.index = index;
+    }
+     
+ 
+}
+　　使用
+
+
+package com;
+ 
+public class B {
+ 
+    public static void main(String[] args) {
+ 
+        //输出某一枚举的值
+        System.out.println( Color.RED.getName() );
+        System.out.println( Color.RED.getIndex() );
+ 
+        //遍历所有的枚举
+        for( Color color : Color.values()){
+            System.out.println( color + "  name: " + color.getName() + "  index: " + color.getIndex() );
+        }
+    }
+ 
+}
+　　结果
+
+红色
+1
+RED name: 红色 index: 1
+GREEN name: 绿色 index: 2
+BLANK name: 白色 index: 3
+YELLO name: 黄色 index: 4
+
+ 
+
+总结：
+
+1、枚举的本质是类，在没有枚举之前，仍然可以按照java最基本的编程手段来解决需要用到枚举的地方。枚举屏蔽了枚举值的类型信息，不像在用public static final定义变量必须指定类型。枚举是用来构建常量数据结构的模板，这个模板可扩展。枚举的使用增强了程序的健壮性，比如在引用一个不存在的枚举值的时候，编译器会报错。枚举的更多用法还需要在开发中去研究创造，Java5、Java6增加了不少新的特性，技术在升级，对程序员来说就要学习，如果你热爱java的话。否则别人用到新特性的代码你看不懂，那才叫郁闷。
+
+2、枚举在Java家族中只占了很小的一块比重，所以我在项目中用枚举的地方不是很多，毕竟，一个项目是很多人开发维护的，用一个陌生的东西，会给其他的同事造成阅读困难。所以常量大都是用public static final 来定义的。
+
+ 

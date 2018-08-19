@@ -29,7 +29,7 @@
 ÕâÀïÁĞ³ögetÇëÇóºÍpostÇëÇóµÄÀı×Ó£º
 
 getÇëÇó:
-¸´ÖÆ´úÂë
+
 <script type="text/javascript">
     //ÇëÇóº¯Êı
     function f1(){
@@ -63,9 +63,9 @@ getÇëÇó:
     }
     
 </script>
-¸´ÖÆ´úÂë
+
 postÇëÇó:
-¸´ÖÆ´úÂë
+
 <script type="text/javascript">
     //ÇëÇóº¯Êı
     function f1(){
@@ -102,7 +102,7 @@ postÇëÇó:
     }
     
 </script>
-¸´ÖÆ´úÂë
+
 Ê²Ã´ÊÇXMLHttpRequest
 
 XMLHttpRequest ÊÇÒ»¸öä¯ÀÀÆ÷½Ó¿Ú£¬Ê¹µÃ Javascript ¿ÉÒÔ½øĞĞ HTTP (S) Í¨ĞÅ¡£×îÔç£¬Î¢ÈíÔÚ IE 5 Òı½øÁËÕâ¸ö½Ó¿Ú¡£ÒòÎªËüÌ«ÓĞÓÃ£¬ÆäËûä¯ÀÀÆ÷Ò²Ä£·Â²¿ÊğÁË£¬ajax ²Ù×÷Òò´ËµÃÒÔµ®Éú¡£µ«ÊÇ£¬Õâ¸ö½Ó¿ÚÒ»Ö±Ã»ÓĞ±ê×¼»¯£¬Ã¿¼Òä¯ÀÀÆ÷µÄÊµÏÖ»ò¶à»òÉÙÓĞµã²»Í¬¡£HTML 5 µÄ¸ÅÄîĞÎ³Éºó£¬W3C ¿ªÊ¼¿¼ÂÇ±ê×¼»¯Õâ¸ö½Ó¿Ú¡£2008Äê 2 ÔÂ£¬¾ÍÌá³öÁË XMLHttpRequest Level 2 ²İ°¸¡£Õâ¸ö XMLHttpRequest µÄĞÂ°æ±¾£¬Ìá³öÁËºÜ¶àÓĞÓÃµÄĞÂ¹¦ÄÜ£¬½«´ó´óÍÆ¶¯»¥ÁªÍø¸ïĞÂ¡£±¾ÎÄ¾Í¶ÔÕâ¸öĞÂ°æ±¾½øĞĞÏêÏ¸½éÉÜ¡£
@@ -137,7 +137,7 @@ XMLHttpRequest ÊÇÒ»¸öä¯ÀÀÆ÷½Ó¿Ú£¬Ê¹µÃ Javascript ¿ÉÒÔ½øĞĞ HTTP (S) Í¨ĞÅ¡£×îÔç£¬Î
 
 getÇëÇó:
 
-¸´ÖÆ´úÂë
+
 //²½ÖèÒ»:´´½¨Òì²½¶ÔÏó
 var ajax = new XMLHttpRequest();
 //²½Öè¶ş:ÉèÖÃÇëÇóµÄurl²ÎÊı,²ÎÊıÒ»ÊÇÇëÇóµÄÀàĞÍ,²ÎÊı¶şÊÇÇëÇóµÄurl,¿ÉÒÔ´ø²ÎÊı,¶¯Ì¬µÄ´«µİ²ÎÊıstarNameµ½·şÎñ¶Ë
@@ -151,12 +151,12 @@ ajax.onreadystatechange = function () {
 ¡¡¡¡¡¡¡¡console.log(ajax.responseText);//ÊäÈëÏàÓ¦µÄÄÚÈİ
   ¡¡¡¡}
 }
-¸´ÖÆ´úÂë
+
  
 
  postÇëÇó:
 
-¸´ÖÆ´úÂë
+
 //´´½¨Òì²½¶ÔÏó  
 var xhr = new XMLHttpRequest();
 //ÉèÖÃÇëÇóµÄÀàĞÍ¼°url
@@ -171,12 +171,11 @@ xhr.onreadystatechange = function () {
     console.log(xhr.responseText);
   } 
 };
-¸´ÖÆ´úÂë
+
  
 
 ÎªÁË·½±ã
 
-¸´ÖÆ´úÂë
 function ajax_method(url,data,method,success) {
     // Òì²½¶ÔÏó
     var ajax = new XMLHttpRequest();
@@ -232,7 +231,7 @@ function ajax_method(url,data,method,success) {
     }
 
 }
-¸´ÖÆ´úÂë
+
  °¸Àı:¼òµ¥Ê¹ÓÃIdea´´½¨Èı²ã¼Ü¹¹ÏîÄ¿ºÍÊı¾İ¿âÁ¬½Ó(Ê¹ÓÃÔ­Éúajax½øĞĞ·ÃÎÊ+ajax)
 
 ¼òµ¥½éÉÜFecth
@@ -250,7 +249,7 @@ Fetch Ìá¹©ÁË¶Ô Request ºÍ Response µÈ¶ÔÏóÍ¨ÓÃµÄ¶¨Òå¡£
 ´¦Àí JSONÏìÓ¦
 ¼ÙÉèĞèÒªÇëÇó JSON ¡ª¡ª »Øµ÷½á¹û¶ÔÏó response ÖĞÓĞÒ»¸öjson()·½·¨,ÓÃÀ´½«Ô­Ê¼Êı¾İ×ª»»³É JavaScript ¶ÔÏó:
 
-¸´ÖÆ´úÂë
+
 fetch('https://davidwalsh.name/demo/arsenal.json').then(function(response) { 
     // ×ª»»Îª JSON
     return response.json();
@@ -258,13 +257,13 @@ fetch('https://davidwalsh.name/demo/arsenal.json').then(function(response) {
     // ÏÖÔÚ, `j` ÊÇÒ»¸ö JavaScript object
     console.log(j); 
 });
-¸´ÖÆ´úÂë
+
 ÕâºÜ¼òµ¥ , Ö»ÊÇ·â×°ÁË JSON.parse(jsonString) ¶øÒÑ, µ« json ·½·¨»¹ÊÇºÜ·½±ãµÄ¡£
 
 ´¦Àí»ù±¾µÄText / HTMLÏìÓ¦
 SON ²¢²»×ÜÊÇÀíÏëµÄÇëÇó/ÏìÓ¦Êı¾İ¸ñÊ½, ÄÇÃ´ÎÒÃÇ¿´¿´ÈçºÎ´¦Àí HTML»òÎÄ±¾½á¹û:
 
-¸´ÖÆ´úÂë
+
 fetch('/next/page')
   .then(function(response) {
     return response.text();
@@ -272,13 +271,13 @@ fetch('/next/page')
     // <!DOCTYPE ....
     console.log(text); 
   });
-¸´ÖÆ´úÂë
+
 ÈçÉÏÃæµÄ´úÂëËùÊ¾, ¿ÉÒÔÔÚ Promise Á´Ê½µÄ then ·½·¨ÖĞ, ÏÈ·µ»Ø text() ½á¹û ,ÔÙ»ñÈ¡ text 
 
 ´¦ÀíBlob½á¹û
 Í¨¹ı fetch ¼ÓÔØÍ¼Ïñ»òÕßÆäËû¶ş½øÖÆÊı¾İ, Ôò»áÂÔÓĞ²»Í¬:
 
-¸´ÖÆ´úÂë
+
 fetch('flowers.jpg')
     .then(function(response) {
       return response.blob();
@@ -286,7 +285,7 @@ fetch('flowers.jpg')
     .then(function(imageBlob) {
       document.querySelector('img').src = URL.createObjectURL(imageBlob);
     });
-¸´ÖÆ´úÂë
+
 ÏìÓ¦ Body mixin µÄ blob() ·½·¨´¦ÀíÏìÓ¦Á÷(Response stream), ²¢ÇÒ½«Æä¶ÁÍê
 
 Ìá½»±íµ¥Êı¾İ(Posting Form Data)
@@ -298,7 +297,7 @@ fetch('/submit', {
 });
 Ìá½» JSON µÄÊ¾ÀıÈçÏÂ:
 
-¸´ÖÆ´úÂë
+
 fetch('/submit-json', {
     method: 'post',
     body: JSON.stringify({
@@ -306,7 +305,7 @@ fetch('/submit-json', {
         answer: document.getElementById('answer').value
     })
 });
-¸´ÖÆ´úÂë
+
  
 
 È±µã

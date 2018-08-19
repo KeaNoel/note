@@ -1,0 +1,24 @@
+StringBuild  StringBuffer  String分别用的什么场合
+
+
+wait：等待
+hotify：通知
+
+所有的锁加在对象上
+比如说：StringBuffer上加的synchronize方法(锁)，（保证线程的安全、降低了性能)
+
+volatile：对于java代码进行优化，
+1、可见性
+2、防止指令重排 
+
+运行速度：
+StringBuild > StringBuffer > String
+
+StringBuffer：多线程的时候
+
+
+
+Stringbuild：
+
+
+	单一模式：

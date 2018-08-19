@@ -1,0 +1,10 @@
+Alt +Enter：万能补全
+
+Alt +Inset：生成构造器、get/set等
+
+Shift+Shift：快速查找
+
+Shift+F6：重命名
+
+Ctrl+Alt+L:格式化代码
+

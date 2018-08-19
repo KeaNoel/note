@@ -1,0 +1,44 @@
+@WebServlet注解用于标注在一个继承了HttpServlet类之上，属于类级别的注解。
+
+用法形如：
+
+@WebServlet("/DisplayHeader1")
+
+
+// 扩展 HttpServlet 类
+public class DisplayHeader extends HttpServlet {
+
+
+// 处理 GET 方法请求的方法
+public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+
+
+其中 /DisplayHeader1 表示访问该servlet的 url 映射（地址）（此处为相对路径，即 “项目名称/DisplayHeader1” ）。
+
+
+
+该注解的作用等价于 在web.xml中配置的该servlet的<servlet-mapping>元素中<url-pattern>的配置，比如：
+
+<servlet>
+<!-- 类名 -->
+<servlet-name>DisplayHeader</servlet-name>
+<!-- 所在的包 -->
+<servlet-class>test.DisplayHeader</servlet-class>
+</servlet>
+<servlet-mapping>
+<servlet-name>DisplayHeader</servlet-name>
+<!-- 访问的网址 -->
+<url-pattern>/DisplayHeader2</url-pattern>
+</servlet-mapping>
+
+此时，访问如下两个路径的效果是一样的，不互斥：
+
+http://localhost:8080/test/DisplayHeader1
+
+和
+
+http://localhost:8080/test/DisplayHeader2
+
+此为在本机上进行的测试，其中test为项目名称。
+
